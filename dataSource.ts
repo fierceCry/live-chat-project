@@ -1,6 +1,6 @@
 import { DataSource } from "typeorm";
-import dotenv from "dotenv";
 import { Message } from './src/messages/message.entity/message.entity';
+import dotenv from "dotenv";
 
 dotenv.config();
 
@@ -15,7 +15,7 @@ const dataSource = new DataSource({
       Message
   ],
   migrations: [__dirname + "/src/migrations/*.ts"],
-  synchronize: false,
+  synchronize: true,
   logging: true,
 });
 export default dataSource;
