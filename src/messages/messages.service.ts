@@ -11,6 +11,7 @@ export class MessagesService {
   ) {}
 
   create(createMessageDto: { sender: string; content: string }) {
+    console.log(createMessageDto)
     const message = this.messagesRepository.create(createMessageDto);
     return this.messagesRepository.save(message);
   }
