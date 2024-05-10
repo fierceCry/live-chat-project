@@ -32,6 +32,7 @@ export class AuthService {
 
     const payload = { email: user.email, user_id: user.id };
     return {
+      email: user.email,
       nickName: user.nickname,
       accessToken: this.jwtService.sign(payload),
     };
@@ -44,14 +45,14 @@ export class AuthService {
       });
       const user = await this.usersRepository.findOne({
         where: { id: payload.user_id },
-        select: ['id', 'nickname'],
+        select: ['id', 'nickname', 'email'],
       });
 
       if (!user) {
         return null;
       }
 
-      return { userId: user.id, nickName: user.nickname };
+      return { userId: user.id, nickName: user.nickname, email: user.email };
     } catch (error) {
       console.error('토큰 검증 실패:', error);
       throw new UnauthorizedException('Invalid token');

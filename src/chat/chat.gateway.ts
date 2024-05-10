@@ -43,7 +43,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const tokenObj = { accessToken };
     const result = await this.authService.validateUser(tokenObj);
     await this.messagesService.create(result.userId, content);
-    const payload = { nickName: result.nickName, content };
+    const payload = { nickName: result.nickName, content, email: result.email };
+    console.log(payload)
     this.server.emit('message', payload); // 모든 클라이언트에게 메시지 전송
   }
 

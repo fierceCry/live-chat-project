@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { UserContent } from '../../entities/UserContent';
-import { Users } from 'entities/Users';
 
 @Injectable()
 export class MessagesService {
@@ -35,5 +34,4 @@ export class MessagesService {
     `);
     return result;
   }
-  
 }
