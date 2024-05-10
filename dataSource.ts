@@ -1,5 +1,6 @@
 import { DataSource } from "typeorm";
-import { Message } from './src/messages/message.entity/message.entity';
+import { Users } from './entities/Users';
+import { UserContent } from './entities/UserContent';
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -12,10 +13,11 @@ const dataSource = new DataSource({
   password: process.env.DB_PASSWORD,
   database: process.env.DB_DATABASE,
     entities: [
-      Message
+      Users,
+      UserContent
   ],
   migrations: [__dirname + "/src/migrations/*.ts"],
-  synchronize: true,
+  synchronize: false,
   logging: true,
 });
 export default dataSource;
