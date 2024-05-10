@@ -1,4 +1,8 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Users } from 'entities/Users';
 import { Repository } from 'typeorm';
@@ -35,24 +39,22 @@ export class AuthService {
 
   async validateUser(tokenObj: { accessToken: string }) {
     try {
-      const token = tokenObj.accessToken;
+      const payload = this.jwtService.verify(tokenObj.accessToken, {
+        secret: process.env.JWT_SECRET_KEY,
+      });
+      const user = await this.usersRepository.findOne({
+        where: { id: payload.user_id },
+        select: ['id', 'nickname'],
+      });
 
-      // JWT 검증
-      const user = await this.jwtService.verify(token);
       if (!user) {
         return null;
       }
-      const result = await this.usersRepository.findOne({
-        where: { id: user.user_id },
-        select: ['id', 'nickname']
-      });
-      // 검증된 토큰에서 사용자 정보 추출
-      return { userId: result.id, nickName: result.nickname};
+
+      return { userId: user.id, nickName: user.nickname };
     } catch (error) {
-      // 토큰 검증 실패 시
       console.error('토큰 검증 실패:', error);
-      return null;
+      throw new UnauthorizedException('Invalid token');
     }
   }
-
 }
