@@ -13,7 +13,7 @@ async function bootstrap() {
     origin: 'http://localhost:3000',
     credentials: true,
   });
-    await app.listen(3095);
+  await app.listen(port);
   console.log(`server listening on port ${port}`);
 
   if (module.hot) {

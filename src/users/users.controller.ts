@@ -22,6 +22,7 @@ export class UsersController {
   @Post('signin')
   async signIn(@Body('email') email: string, @Body('password') password: string) {
     const result = await this.authService.login(email, password);
+    console.log(result)
     return { data : result }
   }
 }

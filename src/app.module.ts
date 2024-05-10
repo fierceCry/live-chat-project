@@ -15,7 +15,6 @@ import { ChatModule } from './chat/chat.module';
 
 dotenv.config();
 
-@Global()
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),

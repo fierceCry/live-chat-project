@@ -11,7 +11,11 @@ import { Server, Socket } from 'socket.io'; // socket.io의 Server와 Socket 모
 import { MessagesService } from '../messages/messages.service'; // 메시지 관련 서비스 임포트
 import { AuthService } from 'src/auth/auth.service';
 
-@WebSocketGateway({ cors: { origin: '*', credentials: true } }) // WebSocket 게이트웨이 설정, CORS 설정 포함
+@WebSocketGateway({
+  cors: { origin: '*', credentials: true },
+  path: '/chat',
+  allowEIO3: true // 쿼리 파라미터 허용
+})
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   constructor(
     private messagesService: MessagesService,
@@ -20,10 +24,19 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   @WebSocketServer() server: Server; // WebSocket 서버 인스턴스
 
+  afterInit(server: Server) {
+    server.use((socket, next) => {
+      const handshakeData = socket.handshake;
+      console.log(handshakeData)
+      // 여기서 handshakeData를 사용하여 필요한 처리를 수행할 수 있습니다.
+      next();
+    });
+  }
+
   // 유저 입장했을떄 메시지 로드
   async handleConnection(client: Socket) {
     // 새로운 클라이언트 연결 시 처리
-    console.log(client)
+    console.log('New client connected:', client.id);
     const messages = await this.messagesService.findAll();
     client.emit('init', messages); // 로드된 메시지를 클라이언트에게 전송
   }
