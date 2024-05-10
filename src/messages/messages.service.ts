@@ -9,8 +9,6 @@ export class MessagesService {
   constructor(
     @InjectRepository(UserContent)
     private messagesRepository: Repository<UserContent>,
-    @InjectRepository(Users)
-    private usersRepository: Repository<Users>,
   ) {}
 
   async create(userId: number, content: string){

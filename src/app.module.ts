@@ -1,4 +1,4 @@
-import { Global, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -10,19 +10,13 @@ import { UserContent } from '../entities/UserContent';
 import { MorganModule } from 'nest-morgan';
 import { UsersModule } from './users/users.module';
 import { Users } from 'entities/Users';
-import { PassportModule } from '@nestjs/passport';
 import { AuthModule } from './auth/auth.module';
 import { ChatModule } from './chat/chat.module';
-import { MessagesService } from './messages/messages.service';
-import { AuthService } from './auth/auth.service';
-// import { ChatModule } from './chat/chat.module';
 
 dotenv.config();
 
-@Global()
 @Module({
   imports: [
-    PassportModule.register({ defaultStrategy: 'jwt' }),
     ConfigModule.forRoot({ isGlobal: true }),
     TypeOrmModule.forRoot({
       type: 'mysql',

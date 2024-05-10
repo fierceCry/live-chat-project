@@ -3,13 +3,10 @@ import { MessagesController } from './messages.controller';
 import { MessagesService } from './messages.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserContent } from '../../entities/UserContent';
-import { Users } from 'entities/Users';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([UserContent, Users])],
+  imports: [TypeOrmModule.forFeature([UserContent])],
   controllers: [MessagesController],
-  providers: [MessagesService],
-  exports: [MessagesService]
-
+  providers: [MessagesService]
 })
 export class MessagesModule {}
