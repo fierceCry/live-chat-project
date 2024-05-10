@@ -1,17 +1,21 @@
 import {
-  WebSocketGateway, // WebSocket 게이트웨이를 정의하기 위한 데코레이터
-  WebSocketServer, // WebSocket 서버 인스턴스에 접근하기 위한 데코레이터
-  SubscribeMessage, // 특정 메시지 이벤트를 구독하기 위한 데코레이터
-  OnGatewayConnection, // 게이트웨이에 새로운 연결이 되었을 때의 처리를 위한 인터페이스
-  OnGatewayDisconnect, // 게이트웨이와의 연결이 끊어졌을 때의 처리를 위한 인터페이스
-  ConnectedSocket, // 연결된 소켓 인스턴스에 접근하기 위한 데코레이터
-  MessageBody, // 메시지 본문에 접근하기 위한 데코레이터
+  WebSocketGateway,
+  WebSocketServer,
+  SubscribeMessage,
+  OnGatewayConnection,
+  OnGatewayDisconnect,
+  ConnectedSocket,
+  MessageBody,
 } from '@nestjs/websockets';
-import { Server, Socket } from 'socket.io'; // socket.io의 Server와 Socket 모듈 임포트
-import { MessagesService } from '../messages/messages.service'; // 메시지 관련 서비스 임포트
+import { Server, Socket } from 'socket.io';
+import { MessagesService } from '../messages/messages.service';
 import { AuthService } from 'src/auth/auth.service';
+import dotenv from 'dotenv';
+dotenv.config();
 
-@WebSocketGateway({ cors: { origin: '*', credentials: true } }) // WebSocket 게이트웨이 설정, CORS 설정 포함
+@WebSocketGateway({
+  cors: { origin: process.env.FOONTEND_URL, credentials: true },
+})
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   constructor(
     private messagesService: MessagesService,
@@ -35,18 +39,16 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   // 유저가 메시지 남겼을때 동작
   @SubscribeMessage('message')
   async handleMessage(client: Socket, { content }: { content: string }) {
-    // 메시지 받기 및 저장
     const accessToken = client.handshake.query.token as string;
     const tokenObj = { accessToken };
     const result = await this.authService.validateUser(tokenObj);
     await this.messagesService.create(result.userId, content);
     const payload = { nickName: result.nickName, content };
-    console.log(payload);
     this.server.emit('message', payload); // 모든 클라이언트에게 메시지 전송
   }
 
   // 새로운 유저 참가 메시지
-  @SubscribeMessage('join') // 'join' 이벤트 구독
+  @SubscribeMessage('join') // 'join' 이벤트
   async handleJoin(
     @MessageBody() tokenObj: { accessToken: string },
     @ConnectedSocket() client: Socket,
