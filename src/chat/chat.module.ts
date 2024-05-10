@@ -1,22 +1,15 @@
+// chat.module.ts
+
 import { Module } from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@nestjs/config';
-import { JwtModule } from '@nestjs/jwt';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Users } from 'entities/Users';
-import { AuthService } from 'src/auth/auth.service';
+import { UserContent } from '../../entities/UserContent';
+import { MessagesService } from '../messages/messages.service'; // MessagesService import
+import { MessagesController } from '../messages/messages.controller';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([Users]),
-    JwtModule.registerAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: async (configService: ConfigService) => ({
-        secret: configService.get<string>('JWT_SECRET'),
-        signOptions: { expiresIn: '1h' },
-      }),
-    }),
-  ],
-  providers: [AuthService],
+  imports: [TypeOrmModule.forFeature([UserContent])],
+  controllers: [MessagesController],
+  providers: [MessagesService], // MessagesService를 providers에 추가
+  exports: [MessagesService], // MessagesService를 export하여 다른 모듈에서도 사용할 수 있도록 함
 })
 export class ChatModule {}

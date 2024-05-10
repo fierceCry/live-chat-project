@@ -23,6 +23,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   // 유저 입장했을떄 메시지 로드
   async handleConnection(client: Socket) {
     // 새로운 클라이언트 연결 시 처리
+    console.log(client)
     const messages = await this.messagesService.findAll();
     client.emit('init', messages); // 로드된 메시지를 클라이언트에게 전송
   }
@@ -33,25 +34,31 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   // 유저가 메시지 남겼을때 동작
-  @SubscribeMessage('message')
-  async handleMessage(client: Socket, { content }: { content: string }) {
-    // 메시지 받기 및 저장
-    const accessToken = client.handshake.query.token as string;
-    const tokenObj = { accessToken };
-    const result = await this.authService.validateUser(tokenObj);
-    await this.messagesService.create(result.userId, content);
-    const payload = { nickName: result.nickName, content };
-    console.log(payload);
-    this.server.emit('message', payload); // 모든 클라이언트에게 메시지 전송
-  }
+// 유저가 메시지 남겼을때 동작
+@SubscribeMessage('message')
+async handleMessage(
+  @ConnectedSocket() client: Socket,
+  @MessageBody() { sender, content }: { sender: string; content: string },
+) {
+  // 메시지 받기 및 저장
+  const accessToken = client.handshake.query.token as string;
+  const tokenObj = { accessToken };
+  const result = await this.authService.validateUser(tokenObj);
+  await this.messagesService.create(result.userId, content);
+  const payload = { nickName: result.nickName, content };
+  console.log(payload);
+  this.server.emit('message', payload); // 모든 클라이언트에게 메시지 전송
+}
 
   // 새로운 유저 참가 메시지
   @SubscribeMessage('join') // 'join' 이벤트 구독
   async handleJoin(
     @MessageBody() tokenObj: { accessToken: string },
     @ConnectedSocket() client: Socket,
-  ) {
+  ) {console.log(client)
     // 사용자가 채팅에 참여했을 때의 로직
+    console.log(tokenObj)
+
     const result = await this.authService.validateUser(tokenObj);
     const joinMessage = {
       content: `${result.nickName}님이 채팅에 참여하셨습니다.`,
