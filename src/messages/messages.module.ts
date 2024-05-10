@@ -2,13 +2,14 @@ import { Module } from '@nestjs/common';
 import { MessagesController } from './messages.controller';
 import { MessagesService } from './messages.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Message } from './message.entity/message.entity';
+import { UserContent } from '../../entities/UserContent';
+import { Users } from 'entities/Users';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Message])],
+  imports: [TypeOrmModule.forFeature([UserContent, Users])],
   controllers: [MessagesController],
   providers: [MessagesService],
-  exports: [MessagesService] // MessagesService를 다른 모듈에서 사용할 수 있도록 내보내기
+  exports: [MessagesService]
 
 })
 export class MessagesModule {}
